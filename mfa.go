@@ -1,18 +1,12 @@
-package go_mfaservice
+package mfa
 
-import (
-	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
-	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
-	grpcHelper "github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers/grpc"
-)
+var mfaservice = NewMFAServiceClient(GrpcConnect("localhost:50051"))
 
-var mfaservice = mfaClient.NewMFAServiceClient(grpcHelper.Connect("localhost:50051"))
-
-func GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateTOTPTokenResponse, error) {
-	context, cancel := helpers.InitContext()
+func GenerateOTP(clientID string, clientSecret string) (*GenerateTOTPTokenResponse, error) {
+	context, cancel := InitContext()
 	defer cancel()
 
-	otpRequest := &mfaClient.GenerateTOTPTokenRequest{
+	otpRequest := &GenerateTOTPTokenRequest{
 		ClientId:     clientID,
 		ClientSecret: clientSecret,
 	}
@@ -20,11 +14,11 @@ func GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateTOTPT
 	return mfaservice.GenerateTOTPToken(context, otpRequest)
 }
 
-func ValidateOTP(token int32, clientID string, clientSecret string) (*mfaClient.ValidateTOTPTokenResponse, error) {
-	context, cancel := helpers.InitContext()
+func ValidateOTP(token int32, clientID string, clientSecret string) (*ValidateTOTPTokenResponse, error) {
+	context, cancel := InitContext()
 	defer cancel()
 
-	validateRequest := &mfaClient.ValidateTOTPTokenRequest{
+	validateRequest := &ValidateTOTPTokenRequest{
 		Token:        token,
 		ClientId:     clientID,
 		ClientSecret: clientSecret,
@@ -33,11 +27,11 @@ func ValidateOTP(token int32, clientID string, clientSecret string) (*mfaClient.
 	return mfaservice.ValidateTOTPToken(context, validateRequest)
 }
 
-func GenerateSecretKey(clientID string) (*mfaClient.TOTPSecretResponse, error) {
-	context, cancel := helpers.InitContext()
+func GenerateSecretKey(clientID string) (*TOTPSecretResponse, error) {
+	context, cancel := InitContext()
 	defer cancel()
 
-	secretRequest := &mfaClient.GenerateTOTPTokenRequest{
+	secretRequest := &GenerateTOTPTokenRequest{
 		ClientId: clientID,
 	}
 
