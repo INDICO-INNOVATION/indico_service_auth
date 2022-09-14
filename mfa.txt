@@ -3,12 +3,9 @@ package go_mfaservice
 import (
 	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
 	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
-	grpcHelper "github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers/grpc"
 )
 
-var mfaservice = mfaClient.NewMFAServiceClient(grpcHelper.Connect("localhost:50051"))
-
-func GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateTOTPTokenResponse, error) {
+func (mfa *mfaservice) GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateTOTPTokenResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
@@ -17,10 +14,10 @@ func GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateTOTPT
 		ClientSecret: clientSecret,
 	}
 
-	return mfaservice.GenerateTOTPToken(context, otpRequest)
+	return mfa.service.GenerateTOTPToken(context, otpRequest)
 }
 
-func ValidateOTP(token int32, clientID string, clientSecret string) (*mfaClient.ValidateTOTPTokenResponse, error) {
+func (mfa *mfaservice) ValidateOTP(token int32, clientID string, clientSecret string) (*mfaClient.ValidateTOTPTokenResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
@@ -30,10 +27,10 @@ func ValidateOTP(token int32, clientID string, clientSecret string) (*mfaClient.
 		ClientSecret: clientSecret,
 	}
 
-	return mfaservice.ValidateTOTPToken(context, validateRequest)
+	return mfa.service.ValidateTOTPToken(context, validateRequest)
 }
 
-func GenerateSecretKey(clientID string) (*mfaClient.TOTPSecretResponse, error) {
+func (mfa *mfaservice) GenerateSecretKey(clientID string) (*mfaClient.TOTPSecretResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
@@ -41,5 +38,5 @@ func GenerateSecretKey(clientID string) (*mfaClient.TOTPSecretResponse, error) {
 		ClientId: clientID,
 	}
 
-	return mfaservice.GenerateSecretKey(context, secretRequest)
+	return mfa.service.GenerateSecretKey(context, secretRequest)
 }

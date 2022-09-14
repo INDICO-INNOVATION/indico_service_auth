@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/INDICO-INNOVATION/indico_service_auth/config"
-	grpcHelper "github.com/INDICO-INNOVATION/indico_service_auth/pkg/grpc"
+	grpcHelper "github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers/grpc"
 	"google.golang.org/grpc"
 )
 
