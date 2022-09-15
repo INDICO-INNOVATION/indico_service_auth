@@ -1,14 +1,12 @@
 package go_mfaservice
 
 import (
-	"os"
-
 	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
 	grpcHelper "github.com/INDICO-INNOVATION/indico_service_auth/pkg/grpc"
 	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
 )
 
-var mfaservice = mfaClient.NewMFAServiceClient(grpcHelper.Connect(os.Getenv("IAM_SERVER")))
+var mfaservice = mfaClient.NewMFAServiceClient(grpcHelper.Connect())
 
 func GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateTOTPTokenResponse, error) {
 	context, cancel := helpers.InitContext()
