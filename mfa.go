@@ -7,7 +7,7 @@ import (
 
 type MfaService interface {
 	GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateTOTPTokenResponse, error)
-	ValidateOTP(token int32, clientID string, clientSecret string) (*mfaClient.ValidateTOTPTokenResponse, error)
+	ValidateOTP(token string, clientID string, clientSecret string) (*mfaClient.ValidateTOTPTokenResponse, error)
 	GenerateSecretKey(clientID string) (*mfaClient.TOTPSecretResponse, error)
 }
 
@@ -27,7 +27,7 @@ func (mfa *mfaservice) GenerateOTP(clientID string, clientSecret string) (*mfaCl
 	return mfa.service.GenerateTOTPToken(context, otpRequest)
 }
 
-func (mfa *mfaservice) ValidateOTP(token int32, clientID string, clientSecret string) (*mfaClient.ValidateTOTPTokenResponse, error) {
+func (mfa *mfaservice) ValidateOTP(token string, clientID string, clientSecret string) (*mfaClient.ValidateTOTPTokenResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
