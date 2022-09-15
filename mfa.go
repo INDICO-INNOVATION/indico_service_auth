@@ -1,21 +1,16 @@
 package go_mfaservice
 
 import (
+	"os"
+
 	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
+	grpcHelper "github.com/INDICO-INNOVATION/indico_service_auth/pkg/grpc"
 	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
 )
 
-type MfaService interface {
-	GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateTOTPTokenResponse, error)
-	ValidateOTP(token string, clientID string, clientSecret string) (*mfaClient.ValidateTOTPTokenResponse, error)
-	GenerateSecretKey(clientID string) (*mfaClient.TOTPSecretResponse, error)
-}
+var mfaservice = mfaClient.NewMFAServiceClient(grpcHelper.Connect(os.Getenv("IAM_SERVER")))
 
-type mfaservice struct {
-	service mfaClient.MFAServiceClient
-}
-
-func (mfa *mfaservice) GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateTOTPTokenResponse, error) {
+func GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateTOTPTokenResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
@@ -24,10 +19,10 @@ func (mfa *mfaservice) GenerateOTP(clientID string, clientSecret string) (*mfaCl
 		ClientSecret: clientSecret,
 	}
 
-	return mfa.service.GenerateTOTPToken(context, otpRequest)
+	return mfaservice.GenerateTOTPToken(context, otpRequest)
 }
 
-func (mfa *mfaservice) ValidateOTP(token string, clientID string, clientSecret string) (*mfaClient.ValidateTOTPTokenResponse, error) {
+func ValidateOTP(token string, clientID string, clientSecret string) (*mfaClient.ValidateTOTPTokenResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
@@ -37,10 +32,10 @@ func (mfa *mfaservice) ValidateOTP(token string, clientID string, clientSecret s
 		ClientSecret: clientSecret,
 	}
 
-	return mfa.service.ValidateTOTPToken(context, validateRequest)
+	return mfaservice.ValidateTOTPToken(context, validateRequest)
 }
 
-func (mfa *mfaservice) GenerateSecretKey(clientID string) (*mfaClient.TOTPSecretResponse, error) {
+func GenerateSecretKey(clientID string) (*mfaClient.TOTPSecretResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
@@ -48,5 +43,5 @@ func (mfa *mfaservice) GenerateSecretKey(clientID string) (*mfaClient.TOTPSecret
 		ClientId: clientID,
 	}
 
-	return mfa.service.GenerateSecretKey(context, secretRequest)
+	return mfaservice.GenerateSecretKey(context, secretRequest)
 }
