@@ -1,4 +1,4 @@
-package mfa
+package helpers
 
 import (
 	"context"
