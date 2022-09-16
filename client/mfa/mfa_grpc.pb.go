@@ -22,9 +22,9 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MFAServiceClient interface {
-	GenerateTOTPToken(ctx context.Context, in *GenerateTOTPTokenRequest, opts ...grpc.CallOption) (*GenerateTOTPTokenResponse, error)
-	ValidateTOTPToken(ctx context.Context, in *ValidateTOTPTokenRequest, opts ...grpc.CallOption) (*ValidateTOTPTokenResponse, error)
-	GenerateSecretKey(ctx context.Context, in *GenerateTOTPTokenRequest, opts ...grpc.CallOption) (*TOTPSecretResponse, error)
+	GenerateOTPToken(ctx context.Context, in *GenerateOTPTokenRequest, opts ...grpc.CallOption) (*GenerateOTPTokenResponse, error)
+	ValidateOTPToken(ctx context.Context, in *ValidateOTPTokenRequest, opts ...grpc.CallOption) (*ValidateOTPTokenResponse, error)
+	GenerateSecretKey(ctx context.Context, in *GenerateOTPTokenRequest, opts ...grpc.CallOption) (*OTPSecretResponse, error)
 }
 
 type mFAServiceClient struct {
@@ -35,26 +35,26 @@ func NewMFAServiceClient(cc grpc.ClientConnInterface) MFAServiceClient {
 	return &mFAServiceClient{cc}
 }
 
-func (c *mFAServiceClient) GenerateTOTPToken(ctx context.Context, in *GenerateTOTPTokenRequest, opts ...grpc.CallOption) (*GenerateTOTPTokenResponse, error) {
-	out := new(GenerateTOTPTokenResponse)
-	err := c.cc.Invoke(ctx, "/MFAService/GenerateTOTPToken", in, out, opts...)
+func (c *mFAServiceClient) GenerateOTPToken(ctx context.Context, in *GenerateOTPTokenRequest, opts ...grpc.CallOption) (*GenerateOTPTokenResponse, error) {
+	out := new(GenerateOTPTokenResponse)
+	err := c.cc.Invoke(ctx, "/MFAService/GenerateOTPToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *mFAServiceClient) ValidateTOTPToken(ctx context.Context, in *ValidateTOTPTokenRequest, opts ...grpc.CallOption) (*ValidateTOTPTokenResponse, error) {
-	out := new(ValidateTOTPTokenResponse)
-	err := c.cc.Invoke(ctx, "/MFAService/ValidateTOTPToken", in, out, opts...)
+func (c *mFAServiceClient) ValidateOTPToken(ctx context.Context, in *ValidateOTPTokenRequest, opts ...grpc.CallOption) (*ValidateOTPTokenResponse, error) {
+	out := new(ValidateOTPTokenResponse)
+	err := c.cc.Invoke(ctx, "/MFAService/ValidateOTPToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *mFAServiceClient) GenerateSecretKey(ctx context.Context, in *GenerateTOTPTokenRequest, opts ...grpc.CallOption) (*TOTPSecretResponse, error) {
-	out := new(TOTPSecretResponse)
+func (c *mFAServiceClient) GenerateSecretKey(ctx context.Context, in *GenerateOTPTokenRequest, opts ...grpc.CallOption) (*OTPSecretResponse, error) {
+	out := new(OTPSecretResponse)
 	err := c.cc.Invoke(ctx, "/MFAService/GenerateSecretKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -66,9 +66,9 @@ func (c *mFAServiceClient) GenerateSecretKey(ctx context.Context, in *GenerateTO
 // All implementations must embed UnimplementedMFAServiceServer
 // for forward compatibility
 type MFAServiceServer interface {
-	GenerateTOTPToken(context.Context, *GenerateTOTPTokenRequest) (*GenerateTOTPTokenResponse, error)
-	ValidateTOTPToken(context.Context, *ValidateTOTPTokenRequest) (*ValidateTOTPTokenResponse, error)
-	GenerateSecretKey(context.Context, *GenerateTOTPTokenRequest) (*TOTPSecretResponse, error)
+	GenerateOTPToken(context.Context, *GenerateOTPTokenRequest) (*GenerateOTPTokenResponse, error)
+	ValidateOTPToken(context.Context, *ValidateOTPTokenRequest) (*ValidateOTPTokenResponse, error)
+	GenerateSecretKey(context.Context, *GenerateOTPTokenRequest) (*OTPSecretResponse, error)
 	mustEmbedUnimplementedMFAServiceServer()
 }
 
@@ -76,13 +76,13 @@ type MFAServiceServer interface {
 type UnimplementedMFAServiceServer struct {
 }
 
-func (UnimplementedMFAServiceServer) GenerateTOTPToken(context.Context, *GenerateTOTPTokenRequest) (*GenerateTOTPTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateTOTPToken not implemented")
+func (UnimplementedMFAServiceServer) GenerateOTPToken(context.Context, *GenerateOTPTokenRequest) (*GenerateOTPTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateOTPToken not implemented")
 }
-func (UnimplementedMFAServiceServer) ValidateTOTPToken(context.Context, *ValidateTOTPTokenRequest) (*ValidateTOTPTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ValidateTOTPToken not implemented")
+func (UnimplementedMFAServiceServer) ValidateOTPToken(context.Context, *ValidateOTPTokenRequest) (*ValidateOTPTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateOTPToken not implemented")
 }
-func (UnimplementedMFAServiceServer) GenerateSecretKey(context.Context, *GenerateTOTPTokenRequest) (*TOTPSecretResponse, error) {
+func (UnimplementedMFAServiceServer) GenerateSecretKey(context.Context, *GenerateOTPTokenRequest) (*OTPSecretResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GenerateSecretKey not implemented")
 }
 func (UnimplementedMFAServiceServer) mustEmbedUnimplementedMFAServiceServer() {}
@@ -98,44 +98,44 @@ func RegisterMFAServiceServer(s grpc.ServiceRegistrar, srv MFAServiceServer) {
 	s.RegisterService(&MFAService_ServiceDesc, srv)
 }
 
-func _MFAService_GenerateTOTPToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GenerateTOTPTokenRequest)
+func _MFAService_GenerateOTPToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateOTPTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MFAServiceServer).GenerateTOTPToken(ctx, in)
+		return srv.(MFAServiceServer).GenerateOTPToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MFAService/GenerateTOTPToken",
+		FullMethod: "/MFAService/GenerateOTPToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MFAServiceServer).GenerateTOTPToken(ctx, req.(*GenerateTOTPTokenRequest))
+		return srv.(MFAServiceServer).GenerateOTPToken(ctx, req.(*GenerateOTPTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MFAService_ValidateTOTPToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ValidateTOTPTokenRequest)
+func _MFAService_ValidateOTPToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateOTPTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MFAServiceServer).ValidateTOTPToken(ctx, in)
+		return srv.(MFAServiceServer).ValidateOTPToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MFAService/ValidateTOTPToken",
+		FullMethod: "/MFAService/ValidateOTPToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MFAServiceServer).ValidateTOTPToken(ctx, req.(*ValidateTOTPTokenRequest))
+		return srv.(MFAServiceServer).ValidateOTPToken(ctx, req.(*ValidateOTPTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _MFAService_GenerateSecretKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GenerateTOTPTokenRequest)
+	in := new(GenerateOTPTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func _MFAService_GenerateSecretKey_Handler(srv interface{}, ctx context.Context,
 		FullMethod: "/MFAService/GenerateSecretKey",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MFAServiceServer).GenerateSecretKey(ctx, req.(*GenerateTOTPTokenRequest))
+		return srv.(MFAServiceServer).GenerateSecretKey(ctx, req.(*GenerateOTPTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -160,12 +160,12 @@ var MFAService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*MFAServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GenerateTOTPToken",
-			Handler:    _MFAService_GenerateTOTPToken_Handler,
+			MethodName: "GenerateOTPToken",
+			Handler:    _MFAService_GenerateOTPToken_Handler,
 		},
 		{
-			MethodName: "ValidateTOTPToken",
-			Handler:    _MFAService_ValidateTOTPToken_Handler,
+			MethodName: "ValidateOTPToken",
+			Handler:    _MFAService_ValidateOTPToken_Handler,
 		},
 		{
 			MethodName: "GenerateSecretKey",

@@ -8,36 +8,36 @@ import (
 
 var mfaservice = mfaClient.NewMFAServiceClient(grpcHelper.Connect())
 
-func GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateTOTPTokenResponse, error) {
+func GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateOTPTokenResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
-	otpRequest := &mfaClient.GenerateTOTPTokenRequest{
+	otpRequest := &mfaClient.GenerateOTPTokenRequest{
 		ClientId:     clientID,
 		ClientSecret: clientSecret,
 	}
 
-	return mfaservice.GenerateTOTPToken(context, otpRequest)
+	return mfaservice.GenerateOTPToken(context, otpRequest)
 }
 
-func ValidateOTP(token string, clientID string, clientSecret string) (*mfaClient.ValidateTOTPTokenResponse, error) {
+func ValidateOTP(token string, clientID string, clientSecret string) (*mfaClient.ValidateOTPTokenResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
-	validateRequest := &mfaClient.ValidateTOTPTokenRequest{
+	validateRequest := &mfaClient.ValidateOTPTokenRequest{
 		Token:        token,
 		ClientId:     clientID,
 		ClientSecret: clientSecret,
 	}
 
-	return mfaservice.ValidateTOTPToken(context, validateRequest)
+	return mfaservice.ValidateOTPToken(context, validateRequest)
 }
 
-func GenerateSecretKey(clientID string) (*mfaClient.TOTPSecretResponse, error) {
+func GenerateSecretKey(clientID string) (*mfaClient.OTPSecretResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
-	secretRequest := &mfaClient.GenerateTOTPTokenRequest{
+	secretRequest := &mfaClient.GenerateOTPTokenRequest{
 		ClientId: clientID,
 	}
 
