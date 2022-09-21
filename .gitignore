@@ -16,3 +16,6 @@
 
 *.json
 *.yaml
+
+cmd/
+Makefile

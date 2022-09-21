@@ -12,7 +12,7 @@ So we have built this MFA Client to be imported by any Golang application instea
 
 * MFA protobuffers
 * Environment variables:
-    > IAM_SERVER=localhost:50051
+    > INNOVATION_CREDENTIALS=<path_to_innovation.json>
 
 ## Features
 
