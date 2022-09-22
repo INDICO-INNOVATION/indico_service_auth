@@ -6,9 +6,9 @@ import (
 	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
 )
 
-var mfaservice = mfaClient.NewMFAServiceClient(grpcHelper.Connect())
-
 func GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateOTPTokenResponse, error) {
+	var mfaservice = mfaClient.NewMFAServiceClient(grpcHelper.Connect())
+
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
@@ -21,6 +21,8 @@ func GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateOTPTo
 }
 
 func ValidateOTP(token string, clientID string, clientSecret string) (*mfaClient.ValidateOTPTokenResponse, error) {
+	var mfaservice = mfaClient.NewMFAServiceClient(grpcHelper.Connect())
+
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
@@ -34,6 +36,8 @@ func ValidateOTP(token string, clientID string, clientSecret string) (*mfaClient
 }
 
 func GenerateSecretKey(clientID string) (*mfaClient.OTPSecretResponse, error) {
+	var mfaservice = mfaClient.NewMFAServiceClient(grpcHelper.Connect())
+
 	context, cancel := helpers.InitContext()
 	defer cancel()
 

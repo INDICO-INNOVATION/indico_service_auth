@@ -9,15 +9,14 @@ import (
 )
 
 func Connect() *grpc.ClientConn {
-	credentials := helpers.ParseEnvironment()
+	// TODO: use credentials
+	_, authServer := helpers.ParseEnvironment()
 
-	conn, err := grpc.Dial(credentials.AuthURI, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(authServer, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		fmt.Printf("error")
 		return nil
 	}
-
-	fmt.Printf("grpc is now connected to %s\n", credentials.AuthURI)
 
 	return conn
 }

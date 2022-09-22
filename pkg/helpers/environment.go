@@ -16,13 +16,8 @@ type InnovationCredentials struct {
 	AuthURI      string `json:"auth_uri"`
 }
 
-// TODO: Change uri when it will be available in prod
-const AUTH_SERVER = "localhost:50051"
-
-func ParseEnvironment() *InnovationCredentials {
-	innovationCredentials := &InnovationCredentials{
-		AuthURI: AUTH_SERVER,
-	}
+func ParseEnvironment() (*InnovationCredentials, string) {
+	var innovationCredentials *InnovationCredentials
 
 	if os.Getenv("INNOVATION_CREDENTIALS") != "" {
 		filebyte, err := ioutil.ReadFile(os.Getenv("INNOVATION_CREDENTIALS"))
@@ -37,5 +32,13 @@ func ParseEnvironment() *InnovationCredentials {
 		log.Println("environment variable INNOVATION_CREDENTIALS not set")
 	}
 
-	return innovationCredentials
+	// TODO: Change uri when it will be available in prod
+	const AUTH_SERVER = "localhost:50051"
+
+	var authServer string = AUTH_SERVER
+	if os.Getenv("AUTH_SERVER") == "" {
+		authServer = os.Getenv("AUTH_SERVER")
+	}
+
+	return innovationCredentials, authServer
 }
