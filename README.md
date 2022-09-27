@@ -10,9 +10,11 @@ So we have built this MFA Client to be imported by any Golang application instea
 
 ## Dependencies
 
-* MFA protobuffers
+* Auth, MFA protobuffers
 * Environment variables:
     > INNOVATION_CREDENTIALS=<path_to_innovation.json>
+
+    > AUTH_SERVER=localhost:50051
 
 ## Features
 
@@ -27,12 +29,39 @@ go get github.com/INDICO-INNOVATION/indico_service_auth
 
 ```bash
 # Example
-import (
-    mfaservice "github.com/INDICO-INNOVATION/indico_service_auth"
-)
+import go_mfaservice "github.com/INDICO-INNOVATION/indico_service_auth"
 
-mfaService := mfaservice.NewMFAService("<iam_grpc_server_host>")
-response, err := mfaService.GenerateSecretKey("<client_id>")
+context, cancel := helpers.InitContext()
+defer cancel()
+
+client, err := go_mfaservice.NewClient(context, "mfa.use")
+if err != nil {
+    log.Fatalf(err.Error())
+}
+
+response, err := client.MfaService.GenerateOTPToken(context, &mfa.GenerateOTPTokenRequest{
+    ClientId:     iam.Credentials.ClientID,
+    ClientSecret: iam.Credentials.ClientSecret,
+})
+if err != nil {
+    log.Fatalf(err.Error())
+}
+
+fmt.Println("Generate OTP Response:")
+fmt.Printf("%+v\n", response)
+
+responsev, err := client.MfaService.ValidateOTPToken(context, &mfa.ValidateOTPTokenRequest{
+    Token:        response.Token,
+    ClientId:     iam.Credentials.ClientID,
+    ClientSecret: iam.Credentials.ClientSecret,
+})
+if err != nil {
+    log.Fatalf(err.Error())
+}
+
+fmt.Println("Validate OTP Response:")
+fmt.Printf("%+v\n", responsev)
+
 
 ```
 

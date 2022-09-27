@@ -1,49 +1,43 @@
-package go_mfaservice
+package indicoserviceauth
 
 import (
 	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
-	grpcHelper "github.com/INDICO-INNOVATION/indico_service_auth/pkg/grpc"
 	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
+	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/iam"
 )
 
-func GenerateOTP(clientID string, clientSecret string) (*mfaClient.GenerateOTPTokenResponse, error) {
-	var mfaservice = mfaClient.NewMFAServiceClient(grpcHelper.Connect())
-
+func (client *Client) GenerateOTP() (*mfaClient.GenerateOTPTokenResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
 	otpRequest := &mfaClient.GenerateOTPTokenRequest{
-		ClientId:     clientID,
-		ClientSecret: clientSecret,
+		ClientId:     iam.Credentials.ClientID,
+		ClientSecret: iam.Credentials.ClientSecret,
 	}
 
-	return mfaservice.GenerateOTPToken(context, otpRequest)
+	return client.MfaService.GenerateOTPToken(context, otpRequest)
 }
 
-func ValidateOTP(token string, clientID string, clientSecret string) (*mfaClient.ValidateOTPTokenResponse, error) {
-	var mfaservice = mfaClient.NewMFAServiceClient(grpcHelper.Connect())
-
+func (client *Client) ValidateOTP(token string) (*mfaClient.ValidateOTPTokenResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
 	validateRequest := &mfaClient.ValidateOTPTokenRequest{
 		Token:        token,
-		ClientId:     clientID,
-		ClientSecret: clientSecret,
+		ClientId:     iam.Credentials.ClientID,
+		ClientSecret: iam.Credentials.ClientSecret,
 	}
 
-	return mfaservice.ValidateOTPToken(context, validateRequest)
+	return client.MfaService.ValidateOTPToken(context, validateRequest)
 }
 
-func GenerateSecretKey(clientID string) (*mfaClient.OTPSecretResponse, error) {
-	var mfaservice = mfaClient.NewMFAServiceClient(grpcHelper.Connect())
-
+func (client *Client) GenerateSecretKey() (*mfaClient.OTPSecretResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
 	secretRequest := &mfaClient.GenerateOTPTokenRequest{
-		ClientId: clientID,
+		ClientId: iam.Credentials.ClientSecret,
 	}
 
-	return mfaservice.GenerateSecretKey(context, secretRequest)
+	return client.MfaService.GenerateSecretKey(context, secretRequest)
 }
