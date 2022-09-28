@@ -2,7 +2,8 @@ package indicoserviceauth
 
 import (
 	"context"
-	"log"
+	"errors"
+	"fmt"
 
 	authClient "github.com/INDICO-INNOVATION/indico_service_auth/client/auth"
 	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
@@ -14,7 +15,7 @@ type Client struct {
 	mfaService  mfaClient.MFAServiceClient
 }
 
-func generateJWT(context context.Context, authservice authClient.AuthServiceClient, scope string) *authClient.GenerateTokenResponse {
+func generateToken(context context.Context, authservice authClient.AuthServiceClient, scope string) (*authClient.GenerateTokenResponse, error) {
 	request := &authClient.GenerateTokenRequest{
 		ClientId:     iam.Credentials.ClientID,
 		ClientSecret: iam.Credentials.ClientSecret,
@@ -23,28 +24,35 @@ func generateJWT(context context.Context, authservice authClient.AuthServiceClie
 		Type:         iam.Credentials.Type,
 	}
 
-	jwt, err := authservice.GenerateToken(context, request)
-	if err != nil {
-		log.Fatalf("error to generate jwt token: %s", err.Error())
-	}
-	return jwt
+	return authservice.GenerateToken(context, request)
 }
 
-func login(context context.Context, authservice authClient.AuthServiceClient, accessToken string, scope string) *authClient.AuthResponse {
+func authenticate(context context.Context, authservice authClient.AuthServiceClient, accessToken string) (*authClient.AuthResponse, error) {
 	request := &authClient.AuthRequest{
 		AccessToken: accessToken,
 		PrivateKey:  iam.Credentials.PrivateKey,
 	}
 
-	authenticated, err := authservice.Authenticate(context, request)
-	if err != nil {
-		log.Fatalf("error to authenticate: %s", err.Error())
-	}
-
-	return authenticated
+	return authservice.Authenticate(context, request)
 }
 
-func NewClient(context context.Context, scope string) (*Client, error) {
+func authorize(context context.Context, client *Client, scope string) error {
+	token, err := generateToken(context, client.authService, scope)
+	if err != nil {
+		return fmt.Errorf("error to generate jwt token: %w", err)
+	}
+
+	authenticated, err := authenticate(context, client.authService, token.AccessToken)
+	if err != nil {
+		return fmt.Errorf("error to authenticate: %s", err)
+	}
+	if !authenticated.Authenticated {
+		return fmt.Errorf("%w", errors.New("you are not allowed to make this request"))
+	}
+	return nil
+}
+
+func NewClient(context context.Context) (*Client, error) {
 	conn := iam.Connect()
 
 	client := &Client{
@@ -52,11 +60,7 @@ func NewClient(context context.Context, scope string) (*Client, error) {
 		mfaService:  mfaClient.NewMFAServiceClient(conn),
 	}
 
-	token := generateJWT(context, client.authService, scope)
-	authenticated := login(context, client.authService, token.AccessToken, scope)
-	if !authenticated.Authenticated {
-		log.Fatalln("invalid credentials")
-	}
+	err := authorize(context, client, "auth.connect")
 
-	return client, nil
+	return client, err
 }

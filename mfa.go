@@ -1,6 +1,8 @@
 package indicoserviceauth
 
 import (
+	"fmt"
+
 	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
 	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
 	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/iam"
@@ -10,6 +12,10 @@ func (client *Client) GenerateOTP() (*mfaClient.GenerateOTPTokenResponse, error)
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
+	if err := authorize(context, client, "mfa.validate"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
 	otpRequest := &mfaClient.GenerateOTPTokenRequest{
 		ClientId:     iam.Credentials.ClientID,
 		ClientSecret: iam.Credentials.ClientSecret,
@@ -18,12 +24,16 @@ func (client *Client) GenerateOTP() (*mfaClient.GenerateOTPTokenResponse, error)
 	return client.mfaService.GenerateOTPToken(context, otpRequest)
 }
 
-func (client *Client) ValidateOTP(token string, useSecret bool) (*mfaClient.ValidateOTPTokenResponse, error) {
+func (client *Client) ValidateOTP(otp string, useSecret bool) (*mfaClient.ValidateOTPTokenResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
+	if err := authorize(context, client, "mfa.validate"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
 	validateRequest := &mfaClient.ValidateOTPTokenRequest{
-		Token:    token,
+		Token:    otp,
 		ClientId: iam.Credentials.ClientID,
 	}
 
@@ -37,6 +47,10 @@ func (client *Client) ValidateOTP(token string, useSecret bool) (*mfaClient.Vali
 func (client *Client) GenerateSecretKey() (*mfaClient.OTPSecretResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
+
+	if err := authorize(context, client, "mfa.validate"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
 
 	secretRequest := &mfaClient.GenerateOTPTokenRequest{
 		ClientId: iam.Credentials.ClientSecret,

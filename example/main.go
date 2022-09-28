@@ -12,13 +12,13 @@ func main() {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
-	client, err := indicoserviceauth.NewClient(context, "mfa.use")
+	client, err := indicoserviceauth.NewClient(context)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
 	generateAndValidate(client)
-	validateThird(client, "959740")
+	validateThird(client, "765637")
 }
 
 func generateAndValidate(client *indicoserviceauth.Client) {

@@ -29,20 +29,17 @@ go get github.com/INDICO-INNOVATION/indico_service_auth
 
 ```bash
 # Example
-import go_mfaservice "github.com/INDICO-INNOVATION/indico_service_auth"
+import indicoserviceauth "github.com/INDICO-INNOVATION/indico_service_auth"
 
 context, cancel := helpers.InitContext()
 defer cancel()
 
-client, err := go_mfaservice.NewClient(context, "mfa.use")
+client, err := indicoserviceauth.NewClient(context)
 if err != nil {
     log.Fatalf(err.Error())
 }
 
-response, err := client.MfaService.GenerateOTPToken(context, &mfa.GenerateOTPTokenRequest{
-    ClientId:     iam.Credentials.ClientID,
-    ClientSecret: iam.Credentials.ClientSecret,
-})
+response, err := client.GenerateOTP()
 if err != nil {
     log.Fatalf(err.Error())
 }
@@ -50,11 +47,7 @@ if err != nil {
 fmt.Println("Generate OTP Response:")
 fmt.Printf("%+v\n", response)
 
-responsev, err := client.MfaService.ValidateOTPToken(context, &mfa.ValidateOTPTokenRequest{
-    Token:        response.Token,
-    ClientId:     iam.Credentials.ClientID,
-    ClientSecret: iam.Credentials.ClientSecret,
-})
+responsev, err := client.ValidateOTP(response.Token, true)
 if err != nil {
     log.Fatalf(err.Error())
 }
