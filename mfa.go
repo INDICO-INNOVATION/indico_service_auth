@@ -15,7 +15,7 @@ func (client *Client) GenerateOTP() (*mfaClient.GenerateOTPTokenResponse, error)
 		ClientSecret: iam.Credentials.ClientSecret,
 	}
 
-	return client.MfaService.GenerateOTPToken(context, otpRequest)
+	return client.mfaService.GenerateOTPToken(context, otpRequest)
 }
 
 func (client *Client) ValidateOTP(token string) (*mfaClient.ValidateOTPTokenResponse, error) {
@@ -28,7 +28,7 @@ func (client *Client) ValidateOTP(token string) (*mfaClient.ValidateOTPTokenResp
 		ClientSecret: iam.Credentials.ClientSecret,
 	}
 
-	return client.MfaService.ValidateOTPToken(context, validateRequest)
+	return client.mfaService.ValidateOTPToken(context, validateRequest)
 }
 
 func (client *Client) GenerateSecretKey() (*mfaClient.OTPSecretResponse, error) {
@@ -39,5 +39,5 @@ func (client *Client) GenerateSecretKey() (*mfaClient.OTPSecretResponse, error) 
 		ClientId: iam.Credentials.ClientSecret,
 	}
 
-	return client.MfaService.GenerateSecretKey(context, secretRequest)
+	return client.mfaService.GenerateSecretKey(context, secretRequest)
 }

@@ -10,8 +10,8 @@ import (
 )
 
 type Client struct {
-	AuthService authClient.AuthServiceClient
-	MfaService  mfaClient.MFAServiceClient
+	authService authClient.AuthServiceClient
+	mfaService  mfaClient.MFAServiceClient
 }
 
 func generateJWT(context context.Context, authservice authClient.AuthServiceClient, scope string) *authClient.GenerateTokenResponse {
@@ -48,12 +48,12 @@ func NewClient(context context.Context, scope string) (*Client, error) {
 	conn := iam.Connect()
 
 	client := &Client{
-		AuthService: authClient.NewAuthServiceClient(conn),
-		MfaService:  mfaClient.NewMFAServiceClient(conn),
+		authService: authClient.NewAuthServiceClient(conn),
+		mfaService:  mfaClient.NewMFAServiceClient(conn),
 	}
 
-	token := generateJWT(context, client.AuthService, scope)
-	authenticated := login(context, client.AuthService, token.AccessToken, scope)
+	token := generateJWT(context, client.authService, scope)
+	authenticated := login(context, client.authService, token.AccessToken, scope)
 	if !authenticated.Authenticated {
 		log.Fatalln("invalid credentials")
 	}
