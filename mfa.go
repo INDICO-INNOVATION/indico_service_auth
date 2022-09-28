@@ -18,14 +18,17 @@ func (client *Client) GenerateOTP() (*mfaClient.GenerateOTPTokenResponse, error)
 	return client.mfaService.GenerateOTPToken(context, otpRequest)
 }
 
-func (client *Client) ValidateOTP(token string) (*mfaClient.ValidateOTPTokenResponse, error) {
+func (client *Client) ValidateOTP(token string, useSecret bool) (*mfaClient.ValidateOTPTokenResponse, error) {
 	context, cancel := helpers.InitContext()
 	defer cancel()
 
 	validateRequest := &mfaClient.ValidateOTPTokenRequest{
-		Token:        token,
-		ClientId:     iam.Credentials.ClientID,
-		ClientSecret: iam.Credentials.ClientSecret,
+		Token:    token,
+		ClientId: iam.Credentials.ClientID,
+	}
+
+	if useSecret {
+		validateRequest.ClientSecret = iam.Credentials.ClientSecret
 	}
 
 	return client.mfaService.ValidateOTPToken(context, validateRequest)

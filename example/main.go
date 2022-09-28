@@ -17,19 +17,35 @@ func main() {
 		log.Fatalf(err.Error())
 	}
 
+	generateAndValidate(client)
+	validateThird(client, "959740")
+}
+
+func generateAndValidate(client *indicoserviceauth.Client) {
 	response, err := client.GenerateOTP()
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
 	fmt.Println("Generate OTP Response:")
-	fmt.Printf("%+v\n", response)
+	fmt.Printf("%+v\n\n", response)
 
-	responsev, err := client.ValidateOTP(response.Token)
+	responsev, err := client.ValidateOTP(response.Token, true)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
 	fmt.Println("Validate OTP Response:")
-	fmt.Printf("%+v\n", responsev)
+	fmt.Printf("%+v\n\n", responsev)
+}
+
+func validateThird(client *indicoserviceauth.Client, token string) {
+	responsev, err := client.ValidateOTP(token, false)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	fmt.Println("Validate Thrid OTP Response:")
+	fmt.Printf("%+v\n\n", responsev)
+
 }
