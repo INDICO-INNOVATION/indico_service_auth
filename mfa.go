@@ -1,18 +1,15 @@
 package indicoserviceauth
 
 import (
+	"context"
 	"fmt"
 
 	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
-	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
 	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/iam"
 )
 
-func (client *Client) GenerateOTP() (*mfaClient.GenerateOTPTokenResponse, error) {
-	context, cancel := helpers.InitContext()
-	defer cancel()
-
-	if err := authorize(context, client, "mfa.validate"); err != nil {
+func (client *Client) GenerateOTP(ctx context.Context) (*mfaClient.GenerateOTPTokenResponse, error) {
+	if err := authorize(ctx, client, "mfa.validate"); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 
@@ -21,14 +18,11 @@ func (client *Client) GenerateOTP() (*mfaClient.GenerateOTPTokenResponse, error)
 		ClientSecret: iam.Credentials.ClientSecret,
 	}
 
-	return client.mfaService.GenerateOTPToken(context, otpRequest)
+	return client.mfaService.GenerateOTPToken(ctx, otpRequest)
 }
 
-func (client *Client) ValidateOTP(otp string, useSecret bool) (*mfaClient.ValidateOTPTokenResponse, error) {
-	context, cancel := helpers.InitContext()
-	defer cancel()
-
-	if err := authorize(context, client, "mfa.validate"); err != nil {
+func (client *Client) ValidateOTP(ctx context.Context, otp string, useSecret bool) (*mfaClient.ValidateOTPTokenResponse, error) {
+	if err := authorize(ctx, client, "mfa.validate"); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 
@@ -41,14 +35,11 @@ func (client *Client) ValidateOTP(otp string, useSecret bool) (*mfaClient.Valida
 		validateRequest.ClientSecret = iam.Credentials.ClientSecret
 	}
 
-	return client.mfaService.ValidateOTPToken(context, validateRequest)
+	return client.mfaService.ValidateOTPToken(ctx, validateRequest)
 }
 
-func (client *Client) GenerateSecretKey() (*mfaClient.OTPSecretResponse, error) {
-	context, cancel := helpers.InitContext()
-	defer cancel()
-
-	if err := authorize(context, client, "mfa.validate"); err != nil {
+func (client *Client) GenerateSecretKey(ctx context.Context) (*mfaClient.OTPSecretResponse, error) {
+	if err := authorize(ctx, client, "mfa.validate"); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 
@@ -56,5 +47,5 @@ func (client *Client) GenerateSecretKey() (*mfaClient.OTPSecretResponse, error) 
 		ClientId: iam.Credentials.ClientSecret,
 	}
 
-	return client.mfaService.GenerateSecretKey(context, secretRequest)
+	return client.mfaService.GenerateSecretKey(ctx, secretRequest)
 }

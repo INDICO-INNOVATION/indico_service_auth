@@ -7,6 +7,7 @@ import (
 
 	authClient "github.com/INDICO-INNOVATION/indico_service_auth/client/auth"
 	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
+	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
 	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/iam"
 )
 
@@ -52,7 +53,8 @@ func authorize(context context.Context, client *Client, scope string) error {
 	return nil
 }
 
-func NewClient(context context.Context) (*Client, error) {
+func NewClient() (*Client, context.Context, error) {
+	ctx, _ := helpers.InitContext()
 	conn := iam.Connect()
 
 	client := &Client{
@@ -60,7 +62,7 @@ func NewClient(context context.Context) (*Client, error) {
 		mfaService:  mfaClient.NewMFAServiceClient(conn),
 	}
 
-	err := authorize(context, client, "auth.connect")
+	err := authorize(ctx, client, "auth.connect")
 
-	return client, err
+	return client, ctx, err
 }

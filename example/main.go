@@ -1,28 +1,25 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	indicoserviceauth "github.com/INDICO-INNOVATION/indico_service_auth"
-	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
 )
 
 func main() {
-	context, cancel := helpers.InitContext()
-	defer cancel()
-
-	client, err := indicoserviceauth.NewClient(context)
+	client, ctx, err := indicoserviceauth.NewClient()
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
-	generateAndValidate(client)
-	validateThird(client, "765637")
+	generateAndValidate(client, ctx)
+	validateThird(client, ctx, "643863")
 }
 
-func generateAndValidate(client *indicoserviceauth.Client) {
-	response, err := client.GenerateOTP()
+func generateAndValidate(client *indicoserviceauth.Client, ctx context.Context) {
+	response, err := client.GenerateOTP(ctx)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
@@ -30,7 +27,7 @@ func generateAndValidate(client *indicoserviceauth.Client) {
 	fmt.Println("Generate OTP Response:")
 	fmt.Printf("%+v\n\n", response)
 
-	responsev, err := client.ValidateOTP(response.Token, true)
+	responsev, err := client.ValidateOTP(ctx, response.Token, true)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
@@ -39,13 +36,14 @@ func generateAndValidate(client *indicoserviceauth.Client) {
 	fmt.Printf("%+v\n\n", responsev)
 }
 
-func validateThird(client *indicoserviceauth.Client, token string) {
-	responsev, err := client.ValidateOTP(token, false)
+func validateThird(client *indicoserviceauth.Client, ctx context.Context, token string) {
+	responsev, err := client.ValidateOTP(ctx, token, false)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
-	fmt.Println("Validate Thrid OTP Response:")
+	fmt.Println("Validate Third Party OTP Response:")
 	fmt.Printf("%+v\n\n", responsev)
 
+	ctx.Done()
 }

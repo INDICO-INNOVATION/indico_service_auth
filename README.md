@@ -31,15 +31,12 @@ go get github.com/INDICO-INNOVATION/indico_service_auth
 # Example
 import indicoserviceauth "github.com/INDICO-INNOVATION/indico_service_auth"
 
-context, cancel := helpers.InitContext()
-defer cancel()
-
-client, err := indicoserviceauth.NewClient(context)
+client, ctx, err := indicoserviceauth.NewClient()
 if err != nil {
     log.Fatalf(err.Error())
 }
 
-response, err := client.GenerateOTP()
+response, err := client.GenerateOTP(ctx)
 if err != nil {
     log.Fatalf(err.Error())
 }
@@ -47,7 +44,7 @@ if err != nil {
 fmt.Println("Generate OTP Response:")
 fmt.Printf("%+v\n", response)
 
-responsev, err := client.ValidateOTP(response.Token, true)
+responsev, err := client.ValidateOTP(ctx, response.Token, true)
 if err != nil {
     log.Fatalf(err.Error())
 }
@@ -55,7 +52,7 @@ if err != nil {
 fmt.Println("Validate OTP Response:")
 fmt.Printf("%+v\n", responsev)
 
-
+ctx.Done()
 ```
 
 ## Documentation
