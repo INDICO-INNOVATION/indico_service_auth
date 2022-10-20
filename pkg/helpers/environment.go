@@ -32,8 +32,7 @@ func ParseEnvironment() (*InnovationCredentials, string) {
 		log.Println("environment variable INNOVATION_CREDENTIALS not set")
 	}
 
-	// TODO: Change uri when it will be available in prod
-	const AUTH_SERVER = "localhost:50051"
+	const AUTH_SERVER = "iam.services.indicoinnovation.pt"
 
 	var authServer string = AUTH_SERVER
 	if os.Getenv("AUTH_SERVER") != "" {
