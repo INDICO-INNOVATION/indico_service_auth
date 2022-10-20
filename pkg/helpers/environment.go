@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -38,6 +39,8 @@ func ParseEnvironment() (*InnovationCredentials, string) {
 	if os.Getenv("AUTH_SERVER") != "" {
 		authServer = os.Getenv("AUTH_SERVER")
 	}
+
+	authServer = fmt.Sprintf("%s:443", authServer)
 
 	return innovationCredentials, authServer
 }
