@@ -36,7 +36,7 @@ func ParseEnvironment() (*InnovationCredentials, string) {
 	const AUTH_SERVER = "localhost:50051"
 
 	var authServer string = AUTH_SERVER
-	if os.Getenv("AUTH_SERVER") == "" {
+	if os.Getenv("AUTH_SERVER") != "" {
 		authServer = os.Getenv("AUTH_SERVER")
 	}
 
